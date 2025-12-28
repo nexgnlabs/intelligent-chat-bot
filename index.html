@@ -4,17 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rahul Khanjire (Prabhag 9)</title>
-    
     <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/960px-WhatsApp.svg.png?20220228223904">
 
     <style>
         :root {
-            /* Modern WhatsApp Colors */
-            --wa-teal-dark: #008069;
-            --wa-teal-light: #00a884;
-            --wa-bg-dark: #111b21;
-            --wa-header-bg: #202c33;
-            --wa-panel-bg: #202c33;
+            --wa-teal: #008069;
+            --wa-dark-bg: #111b21;
+            --wa-header: #202c33;
             --wa-chat-bg: #0b141a;
             --wa-incoming: #202c33;
             --wa-outgoing: #005c4b;
@@ -27,92 +23,112 @@
         
         body { 
             margin: 0; padding: 0; 
-            background-color: var(--wa-chat-bg); 
+            background-color: var(--wa-dark-bg); 
             color: var(--wa-white); 
-            height: 100vh; display: flex; flex-direction: column; 
+            height: 100dvh; display: flex; flex-direction: column; 
             overflow: hidden;
         }
+
+        /* --- LOGIN SCREEN --- */
+        #loginScreen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--wa-dark-bg); z-index: 1000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 20px;
+        }
+        
+        .login-avatar {
+            width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
+            border: 3px solid var(--wa-teal); margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        
+        .login-title { font-size: 22px; font-weight: 600; margin-bottom: 30px; color: var(--wa-white); }
+        
+        .pass-input {
+            width: 100%; max-width: 300px; padding: 12px 15px;
+            background: #2a3942; border: 1px solid #333; border-radius: 8px;
+            color: white; font-size: 16px; margin-bottom: 20px; outline: none;
+            text-align: center; transition: 0.3s;
+        }
+        .pass-input:focus { border-color: var(--wa-teal); }
+        
+        .login-btn {
+            background: var(--wa-teal); color: white; padding: 12px 40px;
+            border: none; border-radius: 25px; font-size: 16px; font-weight: bold;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        .login-btn:active { transform: scale(0.95); }
+
+        /* --- CHAT SCREEN --- */
+        #chatScreen { display: none; flex-direction: column; height: 100%; width: 100%; }
 
         /* HEADER */
         .header {
             display: flex; align-items: center; padding: 10px 16px;
-            background-color: var(--wa-header-bg); 
-            height: 60px; flex-shrink: 0; cursor: pointer;
-            box-shadow: 0 1px 0 rgba(255,255,255,0.05);
-            z-index: 10;
+            background-color: var(--wa-header); 
+            height: 60px; flex-shrink: 0; 
+            box-shadow: 0 1px 0 rgba(255,255,255,0.05); z-index: 10;
         }
-        .back-icon { color: var(--wa-white); margin-right: 12px; font-size: 20px; }
+        .back-btn { margin-right: 15px; font-size: 22px; cursor: pointer; color: var(--wa-white); }
         
-        .avatar-container { position: relative; margin-right: 12px; }
-        .avatar {
+        .avatar-small {
             width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
-            background: #ccc; cursor: pointer;
+            margin-right: 12px; background: #555;
         }
         
         .info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        .name { font-size: 16px; font-weight: 500; color: var(--wa-white); display: flex; align-items: center; gap: 4px; }
-        .verified-badge { color: var(--wa-teal-light); font-size: 14px; } 
-        .status { font-size: 12px; color: var(--wa-gray); margin-top: 2px; }
-        
-        .header-actions { display: flex; gap: 24px; color: var(--wa-white); font-size: 20px; padding-right: 5px; }
-        .icon-btn { cursor: pointer; }
+        .name { font-size: 16px; font-weight: 500; color: var(--wa-white); display: flex; align-items: center; gap: 5px; }
+        .verified { color: var(--wa-teal); font-size: 14px; } 
+        .status { font-size: 12px; color: var(--wa-gray); }
 
         /* CHAT AREA */
         .chat-area {
-            flex: 1; overflow-y: auto; padding: 10px 5%;
-            /* WhatsApp Dark Doodle Pattern */
+            flex: 1; overflow-y: auto; padding: 10px 15px;
             background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-            background-repeat: repeat; background-size: 350px;
+            background-repeat: repeat; background-size: 400px;
             background-color: var(--wa-chat-bg);
             background-blend-mode: overlay;
             display: flex; flex-direction: column; gap: 8px;
         }
 
-        /* Date Badge */
         .date-badge {
             align-self: center; background: #1e2a30; color: #8696a0;
             padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 500;
-            margin: 10px 0; text-transform: uppercase; box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            margin: 10px 0; box-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
 
-        /* Messages */
         .msg-row { display: flex; width: 100%; margin-bottom: 2px; }
         .msg-row.sent { justify-content: flex-end; }
         
         .msg {
-            max-width: 75%; padding: 6px 10px 8px 12px; border-radius: 8px;
-            font-size: 14.2px; line-height: 19px; position: relative;
+            max-width: 80%; padding: 6px 10px 8px 12px; border-radius: 10px;
+            font-size: 14.5px; line-height: 19px; position: relative;
             box-shadow: 0 1px 2px rgba(0,0,0,0.15); word-wrap: break-word;
         }
-        
-        .msg-in { 
-            background: var(--wa-incoming); 
-            border-top-left-radius: 0; 
-            color: var(--wa-white);
-        }
-        
-        .msg-out { 
-            background: var(--wa-outgoing); 
-            border-top-right-radius: 0; 
-            color: var(--wa-white);
-        }
+        .msg-in { background: var(--wa-incoming); border-top-left-radius: 0; color: var(--wa-white); }
+        .msg-out { background: var(--wa-outgoing); border-top-right-radius: 0; color: var(--wa-white); }
 
         .meta {
             display: flex; align-items: center; justify-content: flex-end;
-            gap: 3px; float: right; margin-left: 10px; margin-top: 4px;
+            gap: 4px; float: right; margin-left: 10px; margin-top: 4px;
         }
         .time { font-size: 11px; color: rgba(255,255,255,0.6); }
-        .tick { font-size: 14px; color: var(--wa-blue-tick); display: none; }
+        .tick { font-size: 15px; color: var(--wa-blue-tick); display: none; }
         .msg-out .tick { display: block; }
 
-        /* INPUT AREA */
+        /* FOOTER */
         .footer {
-            min-height: 60px; background: var(--wa-header-bg); padding: 5px 10px;
+            min-height: 60px; background: var(--wa-header); padding: 5px 8px;
             display: flex; align-items: center; gap: 8px; flex-shrink: 0; z-index: 10;
         }
         
-        .footer-icon { font-size: 24px; color: var(--wa-gray); padding: 8px; cursor: pointer; transition: 0.2s; }
-        .footer-icon:active { color: var(--wa-teal-light); }
+        .icon-btn { 
+            font-size: 24px; color: var(--wa-gray); padding: 8px; 
+            cursor: pointer; transition: 0.2s; 
+        }
+        .icon-btn:active { color: var(--wa-teal); transform: scale(1.1); }
 
         .input-wrapper {
             flex: 1; background: #2a3942; border-radius: 20px;
@@ -120,45 +136,34 @@
         }
         .chat-input {
             flex: 1; background: transparent; border: none; color: var(--wa-white);
-            font-size: 15px; outline: none; max-height: 100px; overflow-y: auto;
+            font-size: 16px; outline: none; max-height: 100px; overflow-y: auto;
         }
         .chat-input::placeholder { color: var(--wa-gray); }
 
         .mic-btn {
-            background: var(--wa-teal-light); width: 45px; height: 45px; border-radius: 50%;
+            background: var(--wa-teal); width: 45px; height: 45px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             color: #fff; font-size: 20px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            transition: 0.2s;
-        }
-        .mic-btn:active { transform: scale(0.95); }
-
-        /* SETTINGS PANEL */
-        #apiPanel {
-            position: absolute; top: 60px; right: 10px; width: 300px;
-            background: #2a3942; padding: 15px; border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6); z-index: 100;
-            display: none; border: 1px solid #333;
-        }
-        #apiPanel.active { display: block; animation: fadeIn 0.2s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        #apiKeyInput {
-            width: 100%; padding: 10px; background: #111b21; border: 1px solid #555;
-            color: white; border-radius: 8px; margin-top: 5px; font-family: monospace; outline: none;
-        }
-        .save-btn {
-            width: 100%; padding: 10px; margin-top: 12px; background: var(--wa-teal-light);
-            color: #111; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;
         }
 
-        /* Desktop View */
+        /* EMOJI PICKER (Simple) */
+        .emoji-picker {
+            display: none; position: absolute; bottom: 70px; left: 10px;
+            background: #2a3942; padding: 10px; border-radius: 10px;
+            grid-template-columns: repeat(6, 1fr); gap: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 20;
+        }
+        .emoji-picker.active { display: grid; }
+        .emoji { font-size: 24px; cursor: pointer; }
+
         @media (min-width: 900px) {
             body { align-items: center; background: #000; }
             .app-wrapper { 
                 width: 100%; max-width: 900px; height: 95vh; 
                 display: flex; flex-direction: column; background: var(--wa-chat-bg);
-                box-shadow: 0 0 50px rgba(0,0,0,0.5); border: 1px solid #333;
+                box-shadow: 0 0 50px rgba(0,0,0,0.5); border: 1px solid #333; position: relative;
             }
+            #loginScreen, #chatScreen { width: 100%; max-width: 900px; height: 100%; }
         }
         @media (max-width: 899px) { .app-wrapper { width: 100%; height: 100%; } }
     </style>
@@ -166,84 +171,140 @@
 <body>
 
 <div class="app-wrapper">
-    
-    <div class="header">
-        <div class="back-icon">←</div>
-        <div class="avatar-container">
+
+    <div id="loginScreen">
+        <img src="https://scontent.fpnq7-5.fna.fbcdn.net/v/t39.30808-1/251217068_1124966841618167_5694360626705155112_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=105&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=auzxMQpMmI4Q7kNvwF6lLS8&_nc_oc=AdlLnIfSsgkSSaLEAB5fR4KYbHXv2VgEwvsyjlS9F5lZUYxBhRGWgdX_gZyh9YhBmMzv7iVTadxc2zZzsz88Dypt&_nc_zt=24&_nc_ht=scontent.fpnq7-5.fna&_nc_gid=sCiT-MSn0TkSn20lrHPYQg&oh=00_Afmd9YCSxzlGUdx3dhD2dVPbLpO8RWHiYO3sIbFO_kYxAg&oe=69571180" 
+             onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=RK'" 
+             class="login-avatar" alt="RK">
+        
+        <div class="login-title">Rahul Khanjire Sir</div>
+        
+        <input type="password" id="passwordInput" class="pass-input" placeholder="Enter Password (API Key)">
+        <button class="login-btn" onclick="attemptLogin()">Chat with Rahul Khanjire</button>
+        <p style="font-size:12px; color:#666; margin-top:15px;">Official Chatbot • Prabhag 9</p>
+    </div>
+
+    <div id="chatScreen">
+        <div class="header">
+            <div class="back-btn" onclick="logout()">←</div>
             <img src="https://scontent.fpnq7-5.fna.fbcdn.net/v/t39.30808-1/251217068_1124966841618167_5694360626705155112_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=105&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=auzxMQpMmI4Q7kNvwF6lLS8&_nc_oc=AdlLnIfSsgkSSaLEAB5fR4KYbHXv2VgEwvsyjlS9F5lZUYxBhRGWgdX_gZyh9YhBmMzv7iVTadxc2zZzsz88Dypt&_nc_zt=24&_nc_ht=scontent.fpnq7-5.fna&_nc_gid=sCiT-MSn0TkSn20lrHPYQg&oh=00_Afmd9YCSxzlGUdx3dhD2dVPbLpO8RWHiYO3sIbFO_kYxAg&oe=69571180" 
                  onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=RK'" 
-                 class="avatar" alt="RK" onclick="toggleSettings()">
-        </div>
-        <div class="info" onclick="toggleSettings()">
-            <div class="name">Rahul Khanjire Sir <span class="verified-badge">✔</span></div>
-            <div class="status" id="statusText">Online</div>
-        </div>
-        <div class="header-actions">
-            <span class="icon-btn">📹</span>
-            <span class="icon-btn">📞</span>
-            <span class="icon-btn" onclick="toggleSettings()">⋮</span>
-        </div>
-    </div>
-
-    <div id="apiPanel">
-        <label style="color:#8696a0; font-size:12px; font-weight:bold;">GEMINI API KEY (Stored Locally)</label>
-        <input type="password" id="apiKey" placeholder="Paste Key Here...">
-        <button class="save-btn" onclick="saveKey()">CONNECT</button>
-    </div>
-
-    <div class="chat-area" id="chatBox">
-        <div class="date-badge">Today</div>
-        
-        <div class="msg-row">
-            <div class="msg msg-in">
-                नमस्कार! मी राहुल खंजिरे (प्रभाग क्रमांक 9).
-                आपल्या परिसराच्या विकासासाठी मी सदैव कटिबद्ध आहे. आपली समस्या सांगा.
-                <div class="meta"><span class="time">Now</span></div>
+                 class="avatar-small">
+            <div class="info">
+                <div class="name">Rahul Khanjire Sir <span class="verified">✔</span></div>
+                <div class="status" id="statusText">Online</div>
             </div>
         </div>
-    </div>
 
-    <div class="footer">
-        <div class="footer-icon">😊</div>
-        <div class="footer-icon">➕</div>
-        <div class="input-wrapper">
-            <input type="text" id="userInput" class="chat-input" placeholder="Message" onkeypress="handleEnter(event)">
+        <div class="chat-area" id="chatBox">
+            <div class="date-badge">Today</div>
+            <div class="msg-row">
+                <div class="msg msg-in">
+                    नमस्कार! मी राहुल खंजिरे (प्रभाग क्रमांक 9).
+                    आपली काय मदत करू शकतो?
+                    <div class="meta"><span class="time">Now</span></div>
+                </div>
+            </div>
         </div>
-        <div class="mic-btn" id="sendBtn" onclick="sendMessage()">➤</div>
+
+        <div class="emoji-picker" id="emojiPicker">
+            <div class="emoji" onclick="addEmoji('🙏')">🙏</div>
+            <div class="emoji" onclick="addEmoji('👍')">👍</div>
+            <div class="emoji" onclick="addEmoji('😊')">😊</div>
+            <div class="emoji" onclick="addEmoji('🚩')">🚩</div>
+            <div class="emoji" onclick="addEmoji('🤝')">🤝</div>
+            <div class="emoji" onclick="addEmoji('🇮🇳')">🇮🇳</div>
+            <div class="emoji" onclick="addEmoji('✅')">✅</div>
+            <div class="emoji" onclick="addEmoji('❤️')">❤️</div>
+            <div class="emoji" onclick="addEmoji('😂')">😂</div>
+            <div class="emoji" onclick="addEmoji('📞')">📞</div>
+            <div class="emoji" onclick="addEmoji('🎉')">🎉</div>
+            <div class="emoji" onclick="addEmoji('👋')">👋</div>
+        </div>
+
+        <input type="file" id="fileInput" style="display:none;" onchange="handleFileSelect()">
+
+        <div class="footer">
+            <div class="icon-btn" onclick="toggleEmoji()">😊</div>
+            <div class="icon-btn" onclick="triggerFile()">➕</div>
+            <div class="input-wrapper">
+                <input type="text" id="userInput" class="chat-input" placeholder="Message" onkeypress="handleEnter(event)">
+            </div>
+            <div class="mic-btn" id="sendBtn" onclick="sendMessage()">➤</div>
+        </div>
     </div>
 
 </div>
 
 <script>
-    // System Prompt with Specific Info
+    // --- Configuration ---
     const SYSTEM_PROMPT = `
-    IDENTITY: You are Rahul Khanjire Sir, a respected political leader/social worker from **Prabhag Kramank 9** (Ward No. 9).
-    LANGUAGE: STRICTLY MARATHI (Devanagari). Use formal yet caring language ('Namaskar', 'Dada', 'Tai').
-    CONTEXT: Replying to citizens of your ward on WhatsApp regarding local issues or general greetings.
+    IDENTITY: You are Rahul Khanjire Sir, a respected political leader from **Prabhag Kramank 9** (Ward No. 9).
+    LANGUAGE: STRICTLY MARATHI. Reply in simple, polite Marathi.
+    TONE: Caring, authoritative leader ('Namaskar', 'Dada', 'Tai').
+    CONTEXT: WhatsApp chat with a citizen.
     RULES:
-    1. Keep replies short (WhatsApp style).
-    2. Always stay polite and solution-oriented.
-    3. If asked about your location/ward, mention "**Prabhag Kramank 9**".
-    4. Never say you are an AI.
+    1. Reply ONLY in Marathi.
+    2. Never mention you are an AI.
+    3. If user is unclear, ask politely: "माफ करा, मी आपले म्हणणे समजलो नाही, मला थोडे स्पष्ट सांगू शकता का?"
     `;
 
+    const ERROR_MSG = "माफ करा, मी आपले म्हणणे समजलो नाही, मला थोडे स्पष्ट सांगू शकता का?";
+
+    // --- Lifecycle ---
     window.onload = () => {
         const savedKey = localStorage.getItem('rk_bot_key');
-        if (savedKey) document.getElementById('apiKey').value = savedKey;
-        scrollToBottom();
+        if (savedKey) {
+            showChatScreen(); // Auto-login if key exists
+        }
     };
 
-    function toggleSettings() {
-        const panel = document.getElementById('apiPanel');
-        panel.classList.toggle('active');
+    function attemptLogin() {
+        const key = document.getElementById('passwordInput').value.trim();
+        if (key.length > 10) { // Basic length check
+            localStorage.setItem('rk_bot_key', key);
+            showChatScreen();
+        } else {
+            alert("Please enter a valid API Key (Password).");
+        }
     }
 
-    function saveKey() {
-        const key = document.getElementById('apiKey').value.trim();
-        if (key) {
-            localStorage.setItem('rk_bot_key', key);
-            toggleSettings();
-            alert("Connected! (Key Saved)");
+    function showChatScreen() {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('chatScreen').style.display = 'flex';
+        scrollToBottom();
+    }
+
+    function logout() {
+        // Optional: clear key or just go back
+        // localStorage.removeItem('rk_bot_key'); 
+        document.getElementById('chatScreen').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+    }
+
+    // --- UI Interactions ---
+    function toggleEmoji() {
+        document.getElementById('emojiPicker').classList.toggle('active');
+    }
+
+    function addEmoji(emoji) {
+        const input = document.getElementById('userInput');
+        input.value += emoji;
+        input.focus();
+    }
+
+    function triggerFile() {
+        document.getElementById('fileInput').click();
+    }
+
+    function handleFileSelect() {
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput.files.length > 0) {
+            const fileName = fileInput.files[0].name;
+            addMessage(`📄 Document attached: ${fileName}`, 'msg-out');
+            setTimeout(() => {
+                addMessage("धन्यवाद! मी हे बघतो.", 'msg-in'); // "Thanks, I'll check it"
+            }, 1000);
         }
     }
 
@@ -251,6 +312,7 @@
         if (e.key === 'Enter') sendMessage();
     }
 
+    // --- Core Chat Logic ---
     function getTime() {
         return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
@@ -268,7 +330,6 @@
         const content = document.createElement('div');
         content.className = `msg ${type}`;
         
-        // Tick HTML for sent messages
         const tickHtml = type === 'msg-out' ? '<span class="tick">✓✓</span>' : '';
         
         content.innerHTML = `${text} <div class="meta"><span class="time">${getTime()}</span>${tickHtml}</div>`;
@@ -285,10 +346,7 @@
 
         if (!text) return;
         
-        if (!key) {
-            alert("Please enter API Key in settings (⋮) first.");
-            return;
-        }
+        document.getElementById('emojiPicker').classList.remove('active'); // Hide emojis
 
         // 1. User Msg
         addMessage(text, 'msg-out');
@@ -317,11 +375,11 @@
                 const reply = data.candidates[0].content.parts[0].text;
                 addMessage(reply, 'msg-in');
             } else {
-                addMessage("Server Error. Try again.", 'msg-in');
+                addMessage(ERROR_MSG, 'msg-in');
             }
 
         } catch (error) {
-            addMessage("Network Error.", 'msg-in');
+            addMessage("नेटवर्क समस्या आहे. कृपया पुन्हा प्रयत्न करा.", 'msg-in');
         } finally {
             statusEl.innerText = "Online";
             statusEl.style.color = "#8696a0";
