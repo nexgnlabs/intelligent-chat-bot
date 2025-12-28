@@ -35,11 +35,11 @@
         .back-btn { margin-right: 10px; font-size: 20px; color: var(--text-primary); }
         .avatar {
             width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 12px;
-            background: #ccc; /* Fallback color */
+            background: #ccc; border: 1px solid #555;
         }
         .info { flex: 1; }
         .name { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
-        .verified-tick { color: #00a884; font-size: 14px; } /* Green Tick */
+        .verified-tick { color: #00a884; font-size: 14px; } 
         .status { font-size: 12px; color: var(--text-secondary); }
         
         .header-icons { display: flex; gap: 20px; color: var(--text-primary); font-size: 20px; }
@@ -104,9 +104,6 @@
             color: white; font-size: 20px; cursor: pointer;
         }
 
-        /* Typing Indicator */
-        .typing { font-size: 12px; color: var(--wa-green); margin-left: 5px; font-weight: bold; display: none; }
-
         @media (min-width: 768px) {
             body { max-width: 100%; background: #000; justify-content: center; align-items: center; }
             .app-wrapper { 
@@ -123,7 +120,11 @@
     
     <div class="header">
         <div class="back-btn">←</div>
-        <img src="images.jpg" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul'" class="avatar" alt="RK">
+        
+        <img src="https://scontent.fpnq7-5.fna.fbcdn.net/v/t39.30808-1/251217068_1124966841618167_5694360626705155112_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=105&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=auzxMQpMmI4Q7kNvwF6lLS8&_nc_oc=AdlLnIfSsgkSSaLEAB5fR4KYbHXv2VgEwvsyjlS9F5lZUYxBhRGWgdX_gZyh9YhBmMzv7iVTadxc2zZzsz88Dypt&_nc_zt=24&_nc_ht=scontent.fpnq7-5.fna&_nc_gid=sCiT-MSn0TkSn20lrHPYQg&oh=00_Afmd9YCSxzlGUdx3dhD2dVPbLpO8RWHiYO3sIbFO_kYxAg&oe=69571180" 
+             onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul'" 
+             class="avatar" alt="RK">
+             
         <div class="info">
             <div class="name">
                 Rahul Khanjire Sir
