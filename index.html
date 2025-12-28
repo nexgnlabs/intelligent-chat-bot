@@ -37,7 +37,8 @@
             height: 40px;
             border-radius: 50%;
             margin-right: 10px;
-            object-fit: cover; /* Ensure image fits nicely */
+            background-color: #ccc; /* Placeholder color */
+            /* Replace with your image: background-image: url('your-image.jpg'); background-size: cover; */
         }
 
         .header-info {
@@ -133,16 +134,16 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <img src="profile-image.jpg" alt="Rahul Khanjire Sir" class="profile-image">
+            <div class="profile-image"></div>
             <div class="header-info">
-                <div class="header-name">Rahul Khanjire Sir (MLA)</div>
+                <div class="header-name">Rahul Khanjire Sir</div>
                 <div class="header-status">Online</div>
             </div>
         </div>
 
         <div class="chat-body" id="chat-body">
             <div class="message received">
-                Hello! How can I help you today?
+                नमस्कार! मी तुम्हाला कशी मदत करू शकतो? (Namaskar! How can I help you?)
                 <span class="message-time">10:00 AM</span>
             </div>
             </div>
@@ -150,12 +151,13 @@
         <div class="chat-footer">
             <input type="text" id="message-input" placeholder="Type a message...">
             <button id="send-button">
-                ➤ </button>
+                ➤ 
+            </button>
         </div>
     </div>
 
     <script>
-        // --- Basic JavaScript to handle sending messages (frontend only) ---
+        // --- Frontend Logic ---
 
         const chatBody = document.getElementById('chat-body');
         const messageInput = document.getElementById('message-input');
@@ -191,13 +193,13 @@
                 messageInput.value = ''; // Clear input
 
                 // --- IMPORTANT: Backend Integration Required Here ---
-                // Instead of the `setTimeout` below, you would make a call to your
-                // secure backend server here. Your backend would then call the
-                // Gemini API and return the response.
+                // 1. Send 'messageText' to your secure backend server.
+                // 2. Your backend will call the Gemini API with the prompt to reply in Marathi.
+                // 3. Your backend will return the Marathi response.
                 
-                // Simulate a bot response for demonstration
+                // Simulate a Marathi response for demonstration
                 setTimeout(() => {
-                    addMessage("This is a simulated response. Please connect a backend to your Gemini API to get real answers.", 'received');
+                    addMessage("ही एक नमुना प्रतिक्रिया आहे. कृपया खऱ्या उत्तरांसाठी बॅकएंड कनेक्ट करा. (This is a sample response. Please connect a backend for real answers.)", 'received');
                 }, 1000); 
             }
         }
