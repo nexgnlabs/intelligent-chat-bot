@@ -146,7 +146,7 @@
             color: #fff; font-size: 20px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
-        /* EMOJI PICKER (Simple) */
+        /* EMOJI PICKER */
         .emoji-picker {
             display: none; position: absolute; bottom: 70px; left: 10px;
             background: #2a3942; padding: 10px; border-radius: 10px;
@@ -177,9 +177,10 @@
              onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=RK'" 
              class="login-avatar" alt="RK">
         
-        <div class="login-title">Rahul Khanjire Sir</div>
+        <div class="login-title">Rahul Khanjire</div>
         
-        <input type="password" id="passwordInput" class="pass-input" placeholder="Enter Password (API Key)">
+        <input type="password" id="passwordInput" class="pass-input" placeholder="Enter Password">
+        
         <button class="login-btn" onclick="attemptLogin()">Chat with Rahul Khanjire</button>
         <p style="font-size:12px; color:#666; margin-top:15px;">Official Chatbot • Prabhag 9</p>
     </div>
@@ -191,7 +192,7 @@
                  onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=RK'" 
                  class="avatar-small">
             <div class="info">
-                <div class="name">Rahul Khanjire Sir <span class="verified">✔</span></div>
+                <div class="name">Rahul Khanjire <span class="verified">✔</span></div>
                 <div class="status" id="statusText">Online</div>
             </div>
         </div>
@@ -201,7 +202,7 @@
             <div class="msg-row">
                 <div class="msg msg-in">
                     नमस्कार! मी राहुल खंजिरे (प्रभाग क्रमांक 9).
-                    आपली काय मदत करू शकतो?
+                    आपल्या परिसराच्या विकासासाठी मी सदैव कटिबद्ध आहे. आपली समस्या सांगा.
                     <div class="meta"><span class="time">Now</span></div>
                 </div>
             </div>
@@ -237,9 +238,9 @@
 </div>
 
 <script>
-    // --- Configuration ---
+    // --- Logic Configuration ---
     const SYSTEM_PROMPT = `
-    IDENTITY: You are Rahul Khanjire Sir, a respected political leader from **Prabhag Kramank 9** (Ward No. 9).
+    IDENTITY: You are Rahul Khanjire, a respected political leader from **Prabhag Kramank 9** (Ward No. 9).
     LANGUAGE: STRICTLY MARATHI. Reply in simple, polite Marathi.
     TONE: Caring, authoritative leader ('Namaskar', 'Dada', 'Tai').
     CONTEXT: WhatsApp chat with a citizen.
@@ -251,21 +252,20 @@
 
     const ERROR_MSG = "माफ करा, मी आपले म्हणणे समजलो नाही, मला थोडे स्पष्ट सांगू शकता का?";
 
-    // --- Lifecycle ---
     window.onload = () => {
         const savedKey = localStorage.getItem('rk_bot_key');
         if (savedKey) {
-            showChatScreen(); // Auto-login if key exists
+            showChatScreen();
         }
     };
 
     function attemptLogin() {
         const key = document.getElementById('passwordInput').value.trim();
-        if (key.length > 10) { // Basic length check
+        if (key.length > 10) {
             localStorage.setItem('rk_bot_key', key);
             showChatScreen();
         } else {
-            alert("Please enter a valid API Key (Password).");
+            alert("Please enter a valid Password (API Key).");
         }
     }
 
@@ -276,13 +276,10 @@
     }
 
     function logout() {
-        // Optional: clear key or just go back
-        // localStorage.removeItem('rk_bot_key'); 
         document.getElementById('chatScreen').style.display = 'none';
         document.getElementById('loginScreen').style.display = 'flex';
     }
 
-    // --- UI Interactions ---
     function toggleEmoji() {
         document.getElementById('emojiPicker').classList.toggle('active');
     }
@@ -303,7 +300,7 @@
             const fileName = fileInput.files[0].name;
             addMessage(`📄 Document attached: ${fileName}`, 'msg-out');
             setTimeout(() => {
-                addMessage("धन्यवाद! मी हे बघतो.", 'msg-in'); // "Thanks, I'll check it"
+                addMessage("धन्यवाद! मी हे बघतो.", 'msg-in');
             }, 1000);
         }
     }
@@ -312,7 +309,6 @@
         if (e.key === 'Enter') sendMessage();
     }
 
-    // --- Core Chat Logic ---
     function getTime() {
         return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
@@ -346,7 +342,7 @@
 
         if (!text) return;
         
-        document.getElementById('emojiPicker').classList.remove('active'); // Hide emojis
+        document.getElementById('emojiPicker').classList.remove('active');
 
         // 1. User Msg
         addMessage(text, 'msg-out');
