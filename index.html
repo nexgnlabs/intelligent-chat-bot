@@ -1,215 +1,269 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat with Rahul Khanjire Sir</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rahul Khanjire Sir - Official Chat</title>
     <style>
-        /* --- WhatsApp-like CSS --- */
-        body, html {
-            height: 100%;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #e5ddd5;
+        :root {
+            --wa-green: #00a884;
+            --wa-dark: #111b21;
+            --wa-header: #202c33;
+            --wa-chat-bg: #0b141a;
+            --wa-msg-in: #202c33;
+            --wa-msg-out: #005c4b;
+            --text-primary: #e9edef;
+            --text-secondary: #8696a0;
         }
 
+        * { box-sizing: border-box; font-family: 'Segoe UI', Helvetica, Arial, sans-serif; }
+        
+        body { 
+            margin: 0; padding: 0; 
+            background-color: var(--wa-dark); 
+            color: var(--text-primary); 
+            height: 100vh; display: flex; flex-direction: column; 
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex; align-items: center; padding: 10px 16px;
+            background-color: var(--wa-header); border-bottom: 1px solid #333;
+            height: 60px; flex-shrink: 0; cursor: pointer;
+        }
+        .back-btn { margin-right: 10px; font-size: 20px; color: var(--text-primary); }
+        .avatar {
+            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 12px;
+            background: #ccc; /* Fallback color */
+        }
+        .info { flex: 1; }
+        .name { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+        .verified-tick { color: #00a884; font-size: 14px; } /* Green Tick */
+        .status { font-size: 12px; color: var(--text-secondary); }
+        
+        .header-icons { display: flex; gap: 20px; color: var(--text-primary); font-size: 20px; }
+
+        /* API SETUP PANEL */
+        #apiPanel {
+            position: absolute; top: 60px; right: 10px; width: 300px;
+            background: #2a3942; padding: 15px; border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 100;
+            display: none; border: 1px solid #444;
+        }
+        #apiPanel.active { display: block; }
+        #apiKeyInput {
+            width: 100%; padding: 10px; background: #111b21; border: 1px solid #555;
+            color: white; border-radius: 5px; margin-top: 5px; font-family: monospace;
+        }
+        .save-btn {
+            width: 100%; padding: 10px; margin-top: 10px; background: var(--wa-green);
+            color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
+        }
+
+        /* CHAT AREA */
         .chat-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            max-width: 600px; /* Limit width on large screens */
-            margin: 0 auto; /* Center on large screens */
-            background-color: #fff;
-            box-shadow: 0 1px 1px 0 rgba(0,0,0,0.06), 0 2px 5px 0 rgba(0,0,0,0.2);
+            flex: 1; overflow-y: auto; padding: 20px;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            background-repeat: repeat; background-size: 400px;
+            display: flex; flex-direction: column; gap: 10px;
         }
 
-        /* Header */
-        .chat-header {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background-color: #075e54;
-            color: white;
+        .msg {
+            max-width: 80%; padding: 8px 12px; border-radius: 8px;
+            font-size: 14.2px; line-height: 19px; position: relative;
+            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+        }
+        .msg-in { 
+            align-self: flex-start; background: var(--wa-msg-in); 
+            border-top-left-radius: 0; 
+        }
+        .msg-out { 
+            align-self: flex-end; background: var(--wa-msg-out); 
+            border-top-right-radius: 0; 
+        }
+        
+        .time {
+            font-size: 11px; color: rgba(255,255,255,0.6);
+            float: right; margin-left: 10px; margin-top: 5px;
         }
 
-        .profile-image {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            background-color: #ccc; /* Placeholder color */
-            /* Replace with your image: background-image: url('your-image.jpg'); background-size: cover; */
+        /* FOOTER */
+        .footer {
+            height: 62px; background: var(--wa-header); padding: 5px 10px;
+            display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+        }
+        .emoji-btn, .attach-btn { font-size: 24px; color: var(--text-secondary); cursor: pointer; padding: 5px; }
+        .input-box {
+            flex: 1; padding: 12px 15px; background: #2a3942; border: none;
+            border-radius: 8px; color: white; font-size: 15px; outline: none;
+        }
+        .send-btn {
+            background: var(--wa-green); width: 45px; height: 45px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; border: none;
+            color: white; font-size: 20px; cursor: pointer;
         }
 
-        .header-info {
-            flex-grow: 1;
-        }
+        /* Typing Indicator */
+        .typing { font-size: 12px; color: var(--wa-green); margin-left: 5px; font-weight: bold; display: none; }
 
-        .header-name {
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-
-        .header-status {
-            font-size: 0.8em;
-            color: #dcf8c6;
-        }
-
-        /* Chat Body */
-        .chat-body {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background-image: url('https://i.pinimg.com/originals/97/c0/07/97c00759d90d780d9b8e9f5c8a8d7d5e.jpg'); /* WhatsApp doodle background */
-            background-repeat: repeat;
-            background-size: 300px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        /* Messages */
-        .message {
-            max-width: 80%;
-            padding: 10px;
-            border-radius: 7.5px;
-            position: relative;
-            word-wrap: break-word;
-            font-size: 0.9em;
-        }
-
-        .message.received {
-            align-self: flex-start;
-            background-color: #fff;
-            border-top-left-radius: 0;
-        }
-
-        .message.sent {
-            align-self: flex-end;
-            background-color: #dcf8c6;
-            border-top-right-radius: 0;
-        }
-
-        .message-time {
-            display: block;
-            font-size: 0.7em;
-            color: #999;
-            text-align: right;
-            margin-top: 5px;
-        }
-
-        /* Chat Footer (Input Area) */
-        .chat-footer {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background-color: #f0f0f0;
-        }
-
-        #message-input {
-            flex-grow: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 20px;
-            margin-right: 10px;
-            font-size: 1em;
-            outline: none;
-        }
-
-        #send-button {
-            background-color: #075e54;
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 1.2em;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        @media (min-width: 768px) {
+            body { max-width: 100%; background: #000; justify-content: center; align-items: center; }
+            .app-wrapper { 
+                width: 100%; max-width: 900px; height: 95vh; 
+                display: flex; flex-direction: column; 
+                box-shadow: 0 0 20px rgba(0,0,0,0.5); 
+            }
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <div class="profile-image"></div>
-            <div class="header-info">
-                <div class="header-name">Rahul Khanjire Sir</div>
-                <div class="header-status">Online</div>
+
+<div class="app-wrapper" style="width:100%; height:100%; display:flex; flex-direction:column;">
+    
+    <div class="header">
+        <div class="back-btn">←</div>
+        <img src="images.jpg" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul'" class="avatar" alt="RK">
+        <div class="info">
+            <div class="name">
+                Rahul Khanjire Sir
+                <span class="verified-tick">✔</span>
             </div>
+            <div class="status" id="statusText">Online</div>
         </div>
-
-        <div class="chat-body" id="chat-body">
-            <div class="message received">
-                नमस्कार! मी तुम्हाला कशी मदत करू शकतो? (Namaskar! How can I help you?)
-                <span class="message-time">10:00 AM</span>
-            </div>
-            </div>
-
-        <div class="chat-footer">
-            <input type="text" id="message-input" placeholder="Type a message...">
-            <button id="send-button">
-                ➤ 
-            </button>
+        <div class="header-icons">
+            <span onclick="toggleSettings()">⚙️</span> 
+            <span>📞</span>
+            <span>⋮</span>
         </div>
     </div>
 
-    <script>
-        // --- Frontend Logic ---
+    <div id="apiPanel">
+        <label style="color:#aaa; font-size:12px;">GEMINI API KEY (Saved Locally)</label>
+        <input type="password" id="apiKey" placeholder="Paste Key Here...">
+        <button class="save-btn" onclick="saveKey()">CONNECT BOT</button>
+    </div>
 
-        const chatBody = document.getElementById('chat-body');
-        const messageInput = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-button');
+    <div class="chat-container" id="chatBox">
+        <div class="msg msg-in">
+            नमस्कार! मी राहुल खंजिरे बोलतोय. 
+            मी आपल्या सेवेसाठी इथे उपलब्ध आहे. आपल्या समस्या किंवा प्रश्न बिनधास्त मांडा.
+            <span class="time">Now</span>
+        </div>
+    </div>
 
-        function getCurrentTime() {
-            const now = new Date();
-            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    <div class="footer">
+        <div class="emoji-btn">😊</div>
+        <div class="attach-btn">📎</div>
+        <input type="text" id="userInput" class="input-box" placeholder="Message" onkeypress="handleEnter(event)">
+        <button class="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+
+</div>
+
+<script>
+    // --- Logic Configuration ---
+    const SYSTEM_PROMPT = `
+    ACT AS: Rahul Khanjire (Respected political leader/social worker from Ichalkaranji/Kolhapur region).
+    LANGUAGE: STRICTLY MARATHI (Devanagari script preferred, but simple conversational Marathi).
+    TONE: Polite, authoritative, caring, and solution-oriented. Like a leader talking to a citizen.
+    CONTEXT: You are replying to citizens on WhatsApp.
+    
+    RULES:
+    1. Reply ONLY in Marathi.
+    2. Be respectful (Use 'Namaskar', 'Mitra', 'Dada', 'Tai').
+    3. Keep answers concise (WhatsApp style).
+    4. If asked about helping, say you are always ready for public service.
+    5. Never mention you are an AI. Stay in character as Rahul Khanjire.
+    `;
+
+    // --- Core Functions ---
+
+    window.onload = () => {
+        const savedKey = localStorage.getItem('rahul_bot_key');
+        if (savedKey) document.getElementById('apiKey').value = savedKey;
+    };
+
+    function toggleSettings() {
+        document.getElementById('apiPanel').classList.toggle('active');
+    }
+
+    function saveKey() {
+        const key = document.getElementById('apiKey').value.trim();
+        if (key) {
+            localStorage.setItem('rahul_bot_key', key);
+            toggleSettings();
+            alert("Bot Connected Successfully! (Key Saved)");
+        }
+    }
+
+    function handleEnter(e) {
+        if (e.key === 'Enter') sendMessage();
+    }
+
+    function getTime() {
+        return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function addMessage(text, type) {
+        const box = document.getElementById('chatBox');
+        const div = document.createElement('div');
+        div.className = `msg ${type}`;
+        div.innerHTML = `${text} <span class="time">${getTime()}</span>`;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('userInput');
+        const text = input.value.trim();
+        const key = localStorage.getItem('rahul_bot_key');
+
+        if (!text) return;
+        
+        if (!key) {
+            alert("कृपया प्रथम गियर आयकॉन (⚙️) वर क्लिक करून API Key टाका.");
+            return;
         }
 
-        function addMessage(text, type) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', type);
+        // 1. User Message
+        addMessage(text, 'msg-out');
+        input.value = '';
 
-            const messageText = document.createTextNode(text);
-            messageDiv.appendChild(messageText);
+        // 2. Simulate Typing
+        document.getElementById('statusText').innerText = "typing...";
+        document.getElementById('statusText').style.color = "#00a884";
 
-            const timeSpan = document.createElement('span');
-            timeSpan.classList.add('message-time');
-            timeSpan.textContent = getCurrentTime();
-            messageDiv.appendChild(timeSpan);
+        try {
+            // 3. API Call (Direct to Gemini Flash-Lite)
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${key}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [
+                        { role: "user", parts: [{ text: SYSTEM_PROMPT + "\n\nUser says: " + text }] }
+                    ]
+                })
+            });
 
-            chatBody.appendChild(messageDiv);
-            // Scroll to bottom
-            chatBody.scrollTop = chatBody.scrollHeight;
-        }
-
-        function sendMessage() {
-            const messageText = messageInput.value.trim();
-            if (messageText !== "") {
-                // Add user's message
-                addMessage(messageText, 'sent');
-                messageInput.value = ''; // Clear input
-
-                // --- IMPORTANT: Backend Integration Required Here ---
-                // 1. Send 'messageText' to your secure backend server.
-                // 2. Your backend will call the Gemini API with the prompt to reply in Marathi.
-                // 3. Your backend will return the Marathi response.
-                
-                // Simulate a Marathi response for demonstration
-                setTimeout(() => {
-                    addMessage("ही एक नमुना प्रतिक्रिया आहे. कृपया खऱ्या उत्तरांसाठी बॅकएंड कनेक्ट करा. (This is a sample response. Please connect a backend for real answers.)", 'received');
-                }, 1000); 
+            const data = await response.json();
+            
+            // 4. Bot Response
+            if (data.candidates && data.candidates[0].content) {
+                const reply = data.candidates[0].content.parts[0].text;
+                addMessage(reply, 'msg-in');
+            } else {
+                addMessage("Server error. Please try again.", 'msg-in');
             }
-        }
 
-        sendButton.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-    </script>
+        } catch (error) {
+            addMessage("Network Error. Check internet or API Key.", 'msg-in');
+        } finally {
+            document.getElementById('statusText').innerText = "Online";
+            document.getElementById('statusText').style.color = "#8696a0";
+        }
+    }
+</script>
+
 </body>
 </html>
