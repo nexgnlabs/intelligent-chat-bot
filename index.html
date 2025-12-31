@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rahul Khanjire (Prabhag 9)</title>
+    <title>Chatbot</title>
     <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/960px-WhatsApp.svg.png?20220228223904">
 
     <style>
@@ -79,8 +79,16 @@
         }
         
         .info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        .name { font-size: 16px; font-weight: 500; color: var(--wa-white); display: flex; align-items: center; gap: 5px; }
-        .verified { color: var(--wa-teal); font-size: 14px; } 
+        
+        /* Edited Name Styles */
+        .name-container { display: flex; align-items: center; gap: 8px; }
+        .name { font-size: 16px; font-weight: 500; color: var(--wa-white); }
+        .edit-icon { font-size: 14px; color: var(--wa-gray); cursor: pointer; }
+        .edit-icon:hover { color: var(--wa-teal); }
+        
+        .verified { color: var(--wa-teal); font-size: 14px; display: none; } /* Hidden by default */
+        .verified.active { display: inline; }
+
         .status { font-size: 12px; color: var(--wa-gray); }
 
         /* CHAT AREA */
@@ -177,12 +185,12 @@
              onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=RK'" 
              class="login-avatar" alt="RK">
         
-        <div class="login-title">Rahul Khanjire</div>
+        <div class="login-title">WhatsApp Bot</div>
         
         <input type="password" id="passwordInput" class="pass-input" placeholder="Enter Password">
         
-        <button class="login-btn" onclick="attemptLogin()">Chat with Rahul Khanjire</button>
-        <p style="font-size:12px; color:#666; margin-top:15px;">Official Chatbot • Prabhag 9</p>
+        <button class="login-btn" onclick="attemptLogin()">Enter Chat</button>
+        <p style="font-size:12px; color:#666; margin-top:15px;">Powered by Gemini</p>
     </div>
 
     <div id="chatScreen">
@@ -192,7 +200,11 @@
                  onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=RK'" 
                  class="avatar-small">
             <div class="info">
-                <div class="name">Rahul Khanjire <span class="verified">✔</span></div>
+                <div class="name-container">
+                    <div class="name" id="headerName">Hello</div>
+                    <div class="edit-icon" onclick="editName()">✎</div>
+                    <span class="verified" id="verifiedTick">✔</span>
+                </div>
                 <div class="status" id="statusText">Online</div>
             </div>
         </div>
@@ -200,9 +212,8 @@
         <div class="chat-area" id="chatBox">
             <div class="date-badge">Today</div>
             <div class="msg-row">
-                <div class="msg msg-in">
-                    नमस्कार! मी राहुल खंजिरे (प्रभाग क्रमांक 9).
-                    आपल्या परिसराच्या विकासासाठी मी सदैव कटिबद्ध आहे. आपली समस्या सांगा.
+                <div class="msg msg-in" id="welcomeMsg">
+                    नमस्कार! कृपया वरती नाव बदलून चॅटिंग सुरू करा. (Hello! Click the pencil ✎ icon above to set the person's name).
                     <div class="meta"><span class="time">Now</span></div>
                 </div>
             </div>
@@ -239,17 +250,11 @@
 
 <script>
     // --- Logic Configuration ---
-    const SYSTEM_PROMPT = `
-    IDENTITY: You are Rahul Khanjire, a respected political leader from **Prabhag Kramank 9** (Ward No. 9).
-    LANGUAGE: STRICTLY MARATHI. Reply in simple, polite Marathi.
-    TONE: Caring, authoritative leader ('Namaskar', 'Dada', 'Tai').
-    CONTEXT: WhatsApp chat with a citizen.
-    RULES:
-    1. Reply ONLY in Marathi.
-    2. Never mention you are an AI.
-    3. If user is unclear, ask politely: "माफ करा, मी आपले म्हणणे समजलो नाही, मला थोडे स्पष्ट सांगू शकता का?"
-    `;
+    
+    // Default Name
+    let currentBotName = "Hello";
 
+    // Error Message
     const ERROR_MSG = "माफ करा, मी आपले म्हणणे समजलो नाही, मला थोडे स्पष्ट सांगू शकता का?";
 
     window.onload = () => {
@@ -259,9 +264,61 @@
         }
     };
 
+    function editName() {
+        const newName = prompt("Enter the name of the person/leader:", currentBotName === "Hello" ? "" : currentBotName);
+        if (newName && newName.trim() !== "") {
+            currentBotName = newName.trim();
+            document.getElementById('headerName').innerText = currentBotName;
+            
+            // If user enters specific Rahul Khanjire, show verified tick
+            if (currentBotName.toLowerCase().includes("rahul")) {
+                document.getElementById('verifiedTick').classList.add('active');
+            } else {
+                document.getElementById('verifiedTick').classList.remove('active');
+            }
+
+            // Add system notification
+            const box = document.getElementById('chatBox');
+            const note = document.createElement('div');
+            note.style.textAlign = 'center';
+            note.style.fontSize = '12px';
+            note.style.color = '#8696a0';
+            note.style.margin = '10px 0';
+            note.style.background = '#1e2a30';
+            note.style.padding = '5px 10px';
+            note.style.borderRadius = '8px';
+            note.style.alignSelf = 'center';
+            note.innerText = `You are now chatting with ${currentBotName}`;
+            box.appendChild(note);
+        }
+    }
+
+    // Dynamic System Prompt Generator
+    function getSystemPrompt() {
+        if (currentBotName.toLowerCase().includes("rahul")) {
+            // Specific Logic for Rahul Khanjire
+            return `
+            IDENTITY: You are ${currentBotName}, a respected political leader from **Prabhag Kramank 9** (Ward No. 9).
+            LANGUAGE: STRICTLY MARATHI (DEVANAGARI SCRIPT ONLY). Do NOT use English letters.
+            TONE: Conversational, caring, and local ('नमस्कार', 'भाऊ', 'ताई', 'दादा'). Use day-to-day spoken Marathi words like 'नक्कीच', 'बघतो', 'काळजी करू नका', 'लगेच'.
+            CONTEXT: WhatsApp chat with a citizen of your ward.
+            RULES: Reply ONLY in Devanagari Marathi. Never mention you are an AI. If user is unclear, ask politely.
+            `;
+        } else {
+            // Generic Logic for any other name
+            return `
+            IDENTITY: You are ${currentBotName}.
+            LANGUAGE: STRICTLY MARATHI (DEVANAGARI SCRIPT ONLY).
+            TONE: Friendly and conversational.
+            CONTEXT: Chatting on WhatsApp.
+            RULES: Reply ONLY in Devanagari Marathi. Act exactly like ${currentBotName} would.
+            `;
+        }
+    }
+
     function attemptLogin() {
         const key = document.getElementById('passwordInput').value.trim();
-        if (key.length > 10) {
+        if (key.length > 5) {
             localStorage.setItem('rk_bot_key', key);
             showChatScreen();
         } else {
@@ -354,13 +411,13 @@
         statusEl.style.color = "#00a884";
 
         try {
-            // 3. API Call
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${key}`, {
+            // 3. API Call using STABLE MODEL
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [
-                        { role: "user", parts: [{ text: SYSTEM_PROMPT + "\n\nCitizen says: " + text }] }
+                        { role: "user", parts: [{ text: getSystemPrompt() + "\n\nUser says: " + text }] }
                     ]
                 })
             });
@@ -375,7 +432,7 @@
             }
 
         } catch (error) {
-            addMessage("नेटवर्क समस्या आहे. कृपया पुन्हा प्रयत्न करा.", 'msg-in');
+            addMessage("नेटवर्क समस्या आहे.", 'msg-in');
         } finally {
             statusEl.innerText = "Online";
             statusEl.style.color = "#8696a0";
